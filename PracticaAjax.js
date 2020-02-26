@@ -1,6 +1,8 @@
 const urlCategorias =
   "https://my-json-server.typicode.com/DWEC-18-19/TheCatApi/categorias";
 const categoriasInput = document.getElementById("select-categorias");
+const urlRazas = "https://api.thecatapi.com/v1/breeds";
+const razasInput = document.getElementById("select-razas");
 
 // llámada asíncrona con AJAX
 var getJSON = function(url) {
@@ -22,7 +24,6 @@ var getJSON = function(url) {
   });
 };
 
-// Hacemos una petición AJAX para crear las categorias
 getJSON(urlCategorias).then(
   function(data) {
     data.forEach(function(categoria) {
@@ -38,20 +39,35 @@ getJSON(urlCategorias).then(
   }
 );
 
+getJSON(urlRazas).then(
+  function(data) {
+    data.forEach(function(raza) {
+      option = document.createElement("option");
+      option.setAttribute("value", raza.id);
+      option.innerHTML = raza.name;
+      razasInput.appendChild(option);
+    });
+  },
+  function(status) {
+    alert("Nein");
+  }
+);
+
+// Hacemos una petición AJAX para crear las categorias
+
 function fotos() {
   var xhr = new XMLHttpRequest();
 
-  var categorias = document.getElementById("select-categorias").value;
   var cantidad = document.getElementById("select-cantidad").value;
-  console.log(categorias);
-  console.log(cantidad);
+
   document.getElementById("expositor").innerHTML = "";
 
-  //xhr.open("GET", "https://api.thecatapi.com/v1/images/search?category_ids=" + categorias + "&limit=" + cantidad, true);
   xhr.open(
     "GET",
     "https://api.thecatapi.com/v1/images/search?category_ids=" +
-      categorias +
+      categoriasInput.value +
+      "&breed_ids=" +
+      razasInput.value +
       "&limit=" +
       cantidad,
     true
@@ -67,10 +83,8 @@ function fotos() {
       for (let i = 0; i < cantidad; i++) {
         imagenes += "<img src='" + cosas[i]["url"] + "'>";
       }
-
       document.getElementById("expositor").innerHTML += imagenes;
     } else {
-      // JA!JA! Ahora puedes ir a la esquina a llorar
       console.log("Ha habido fallos");
     }
   };
